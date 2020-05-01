@@ -1,0 +1,4 @@
+1. when using unsingned format, pay attention to silence value.
+   Always start with silence value, or sound would start with an audible clicking sound.
+
+2. what is the silence value of u16 type?

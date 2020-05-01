@@ -3,12 +3,14 @@
 
 #include "stream_buffer.h"
 
-const uint8_t amplitude = 255;
+const int8_t amplitude = 127;
 const int sample_rate = 44100;
 const int samples_per_buffer = 1024;
 const float freq = 441.0;
 
-chiptune::StreamBuffer<std::shared_ptr<std::string>> buf(32);
+// This is implemented as circular buffer,
+// size of 2 makes it ping-pong buffer
+chiptune::StreamBuffer<std::shared_ptr<std::string>> buf(2);
 
 void show_spec(const SDL_AudioSpec& wav_spec);
 void gen_buf();
@@ -22,7 +24,7 @@ int main(int argc, char** argv) {
     
     SDL_AudioSpec want_spec;
     want_spec.freq = 44100;
-    want_spec.format = AUDIO_U8;
+    want_spec.format = AUDIO_S8;
     want_spec.channels = 1;
     want_spec.samples = samples_per_buffer;
     want_spec.callback = audio_callback;
@@ -71,8 +73,9 @@ void gen_buf() {
         data.resize(samples_per_buffer);
         for (auto& ele : data) {
             t = (double)sample_count++ / (double)sample_rate;
-            //std::cout << sin(2 * M_PI * freq * t) / 2 + 0.5 << std::endl;
-            ele = (uint8_t)amplitude * (sin(2 * M_PI * freq * t) / 2 + 0.5) / 4;
+            ele = (int8_t)amplitude * sin(2 * M_PI * freq * t);
+            int num = ele;
+            std::cout << num << " ";
         }
         
         auto ptr = std::make_shared<std::string>(data);
